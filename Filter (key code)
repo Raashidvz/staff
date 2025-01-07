@@ -1,0 +1,81 @@
+//filter-2
+
+<div class="search-bar">
+            <form method="POST" action="">
+                <!-- Search Input -->
+                <input type="text" name="searchQuery" placeholder="Search for a dress..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+
+                <!-- Filter by Fabric -->
+                <select name="fabricFilter">
+                    <option value="">All Fabrics</option>
+                    <option value="Silk" <?php if ($_POST['fabricFilter'] === 'Silk') echo 'selected'; ?>>Silk</option>
+                    <option value="Cotton" <?php if ($_POST['fabricFilter'] === 'Cotton') echo 'selected'; ?>>Cotton</option>
+                </select>
+
+                <!-- Filter by Price Range -->
+                <input type="number" name="minPrice" placeholder="Min Price" value="<?php echo htmlspecialchars($_POST['minPrice']); ?>">
+                <input type="number" name="maxPrice" placeholder="Max Price" value="<?php echo htmlspecialchars($_POST['maxPrice']); ?>">
+
+                <!-- Filter by Style -->
+                <select name="styleFilter">
+                    <option value="">All Styles</option>
+                    <option value="Traditional" <?php if ($_POST['styleFilter'] === 'Traditional') echo 'selected'; ?>>Traditional</option>
+                    <option value="Western" <?php if ($_POST['styleFilter'] === 'Western') echo 'selected'; ?>>Western</option>
+                </select>
+
+                <!-- Submit Button -->
+                <button type="submit" name="search">Search</button>
+            </form>
+        </div>
+
+
+
+//php
+
+// Handle search query
+$searchQuery = "";
+$fabricFilter = "";
+$minPrice = "";
+$maxPrice = "";
+$styleFilter = "";
+
+if (isset($_POST['search'])) {
+    $searchQuery = mysqli_real_escape_string($dbcon, trim($_POST['searchQuery']));
+    $fabricFilter = mysqli_real_escape_string($dbcon, trim($_POST['fabricFilter']));
+    $minPrice = !empty($_POST['minPrice']) ? (float)$_POST['minPrice'] : null;
+    $maxPrice = !empty($_POST['maxPrice']) ? (float)$_POST['maxPrice'] : null;
+    $styleFilter = mysqli_real_escape_string($dbcon, trim($_POST['styleFilter']));
+
+    // Base query
+$sql = "SELECT * FROM dress WHERE visibility = 1";
+
+// Apply search query
+if (!empty($searchQuery)) {
+    $sql .= " AND LOWER(NAME) LIKE LOWER('%$searchQuery%')";
+}
+
+// Apply fabric filter
+if (!empty($_POST['fabricFilter'])) {
+    $fabricFilter = mysqli_real_escape_string($dbcon, $_POST['fabricFilter']);
+    $sql .= " AND FABRIC = '$fabricFilter'";
+}
+
+// Apply price range filter
+$minPrice = !empty($_POST['minPrice']) ? (float)$_POST['minPrice'] : null;
+$maxPrice = !empty($_POST['maxPrice']) ? (float)$_POST['maxPrice'] : null;
+if ($minPrice !== null) {
+    $sql .= " AND BASE_PRICE >= $minPrice";
+}
+if ($maxPrice !== null) {
+    $sql .= " AND BASE_PRICE <= $maxPrice";
+}
+
+// Apply style filter
+// if (!empty($_POST['styleFilter'])) {
+//     $styleFilter = mysqli_real_escape_string($dbcon, $_POST['styleFilter']);
+//     $sql .= " AND STYLE = '$styleFilter'";
+// }
+
+// Execute the query
+$result = mysqli_query($dbcon, $sql);
+}
