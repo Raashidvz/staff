@@ -1,0 +1,46 @@
+//To search today’s orders (OrderManage.php)
+
+
+//html
+
+<div class="actions">
+                    <button type="button" onclick="window.location.href='fabricOrders.php'" class="View fabrics">Fabric Order </button>
+                    <button type="button" onclick="window.location.href='OrderManage.php'">All Orders</button>
+                    <button type="button" onclick="window.location.href='OrderManage.php?filter=today'">Today's Orders</button>
+                </div>
+
+
+
+
+
+//php
+
+<?php
+// Database connection
+$conn = new mysqli('localhost', 'root', '', 'fashion');
+// Enable error reporting for debugging
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+error_reporting(0);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+
+// Check if the filter for today's orders is applied
+$filterToday = isset($_GET['filter']) && $_GET['filter'] === 'today';
+
+// Get today's date
+$today = date('Y-m-d');
+
+// Modify SQL query based on the filter
+if ($filterToday) {
+    $sql = "SELECT * FROM orders WHERE STATUSES != 'CART' AND DATE(CREATED_AT) = '$today' ORDER BY ORDER_ID DESC";
+} else {
+    $sql = "SELECT * FROM orders WHERE STATUSES != 'CART' ORDER BY ORDER_ID DESC";
+}
+
+$result = $conn->query($sql);
+?>
