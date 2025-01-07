@@ -1,0 +1,21 @@
+<?php
+function isValidUsername($username) {
+    // Regular expression to validate the username
+    $pattern = '/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]+$/';
+
+    // Check if the username matches the pattern
+    if (preg_match($pattern, $username)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Test examples
+$username = "User@123";
+if (isValidUsername($username)) {
+    echo "Valid username!";
+} else {
+    echo "Invalid username!";
+}
+?>
