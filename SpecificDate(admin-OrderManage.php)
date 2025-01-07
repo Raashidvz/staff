@@ -1,0 +1,26 @@
+// search specific date (OrderManage.php)
+
+//html
+
+<form method="GET" action="OrderManage.php">
+                        <label for="date">Select Date:</label>
+                        <input type="date" id="date" name="date" value="<?php echo isset($_GET['date']) ? $_GET['date'] : ''; ?>">
+                        <button type="submit">Filter Orders</button>
+                    </form>
+                <div style="height:20px;"></div>
+
+
+
+
+//php
+// Check if the 'date' parameter is passed in the URL
+$selectedDate = isset($_GET['date']) ? $_GET['date'] : '';
+
+// Modify SQL query based on the selected date
+if ($selectedDate) {
+    // Get orders from the selected date
+    $sql = "SELECT * FROM orders WHERE STATUSES != 'CART' AND DATE(CREATED_AT) = '$selectedDate' ORDER BY ORDER_ID DESC";
+} else {
+    // Default query to show all orders
+    $sql = "SELECT * FROM orders WHERE STATUSES != 'CART' ORDER BY ORDER_ID DESC";
+}
